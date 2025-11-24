@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 20:35:48 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/23 23:30:29 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:32:39 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <stdint.h>
+# include <limits.h>
 
 typedef	struct s_philo t_philo;
 typedef	struct s_data t_data;
