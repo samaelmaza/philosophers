@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 20:35:48 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/24 17:32:39 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:39:35 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <stdint.h>
 # include <limits.h>
 
-typedef	struct s_philo t_philo;
 typedef	struct s_data t_data;
 
 typedef struct s_philosophers
@@ -34,7 +33,7 @@ typedef struct s_philosophers
 	pthread_mutex_t *second_fork;
 	pthread_mutex_t *meal_mutex;
 	t_data			*data;
-};
+}	t_philo;
 
 typedef	struct s_data
 {
@@ -47,6 +46,6 @@ typedef	struct s_data
 	pthread_mutex_t print_mutex;
 	t_philo			*philos;
 	long			start_time;
-};
+}	t_data;
 
 #endif

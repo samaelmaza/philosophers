@@ -6,13 +6,13 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 23:30:40 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/24 17:37:23 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/24 17:46:15 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-long	atol(char *str)
+long	ft_atol(char *str)
 {
 	long result;
 	long sign;
@@ -33,7 +33,7 @@ long	atol(char *str)
 	if(result > INT_MAX)
 	{
 		printf("The value is not an int\n");
-		return NULL;
+		return (-1);
 	}
 	return (result * sign);
 }
@@ -50,12 +50,12 @@ int	is_digit(char *str)
 	if(str[i] == '-')
 	{
 		printf("Negative numbers are not accepted\n");
-		return NULL;
+		return -1;
 	}
 	while(str[i])
 	{
 		if(str[i] > '9' || str[i] < '0')
-			return (1);
+			return (-1);
 		i++;
 	}
 	return (0);
@@ -68,12 +68,12 @@ int	parse_input(t_data *data, int ac, char **av)
 	i = 1;
 	while(i < ac)
 	{
-		if(!is_digit(av[i]))
+		if(is_digit(av[i]) == -1)
 			return (1);
 
 		i++;
 	}
-	return 0;
+	return (0);
 }
 int	main(int ac, char **av)
 {
