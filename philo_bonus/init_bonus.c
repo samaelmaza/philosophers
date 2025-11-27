@@ -6,68 +6,69 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:22 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:39:23 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 18:15:50 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philosophers.h"
+#include "philo_bonus.h"
 
-void	init_input(t_philo *philo, char **argv)
+static int clean_semaphores()
 {
-	philo->time_to_die = ft_atoi(argv[2]);
-	philo->time_to_eat = ft_atoi(argv[3]);
-	philo->time_to_sleep = ft_atoi(argv[4]);
-	philo->num_of_philos = ft_atoi(argv[1]);
+	sem_unlink("/philo_forks");
+	sem_unlink("/philo_write");
+	sem_unlink("/philo_dead");
+	sem_unlink("/philo_meal");
+	return (0);
+}
+int	init_semaphores(t_program *program)
+{
+	clean_semaphores();
+	program->forks = sem_open("/philo_forks", O_CREAT, 0664, program->nb_philos);
+	program->write_lock = sem_open("/philo_write", O_CREAT, 0644, 1);
+	program->dead_lock = sem_open("/philo_dead", O_CREAT, 0644, 1);
+	program->meal_lock = sem_open("/philo_meal", O_CREAT, 0644, 1);
+	if(program->forks == SEM_FAILED ||
+		program->write_lock == SEM_FAILED ||
+		program->dead_lock == SEM_FAILED ||
+		program->meal_lock == SEM_FAILED)
+		return (1);
+	return (0);
+}
+
+void	init_philos(t_program *program)
+{
+	int	i;
+
+	i = 0;
+	while (i < program->nb_philos)
+	{
+		program->philos[i].id = i + 1;
+		program->philos[i].meals_eaten = 0;
+		program->philos[i].last_meal = get_current_time();
+		program->philos[i].program = program;
+		i++;
+	}
+}
+
+int	init_program(t_program *program, char **argv)
+{
+	program->nb_philos = ft_atoi(argv[1]);
+	program->time_to_die = ft_atoi(argv[2]);
+	program->time_to_eat = ft_atoi(argv[3]);
+	program->time_to_sleep = ft_atoi(argv[4]);
 	if (argv[5])
-		philo->num_times_to_eat = ft_atoi(argv[5]);
+		program->meals_required = ft_atoi(argv[5]);
 	else
-		philo->num_times_to_eat = -1;
-}
-
-void	init_program(t_philo *philos, t_program *program)
-{
-	program->dead_flag = 0;
-	program->philos = philos;
-	pthread_mutex_init(&program->write_lock, NULL);
-	pthread_mutex_init(&program->dead_lock, NULL);
-	pthread_mutex_init(&program->meal_lock, NULL);
-}
-
-void	init_forks(pthread_mutex_t *forks, int philo_num)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo_num)
+		program->meals_required = -1;
+	program->philos = mmap(NULL, sizeof(t_philo) * program->nb_philos,
+			PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	if (program->philos == MAP_FAILED)
 	{
-		pthread_mutex_init(&forks[i], NULL);
-		i++;
+		printf("Error: Mmap philos failed\n");
+		return (1);
 	}
-}
-
-void	init_philos(t_philo *philos, t_program *program,
-		pthread_mutex_t *forks, char **argv)
-{
-	int	i;
-
-	i = 0;
-	while (i < ft_atoi(argv[1]))
-	{
-		philos[i].id = i + 1;
-		philos[i].eating = 0;
-		philos[i].meals_eaten = 0;
-		init_input(&philos[i], argv);
-		philos[i].start_time = get_current_time();
-		philos[i].last_meal = get_current_time();
-		philos[i].write_lock = &program->write_lock;
-		philos[i].dead_lock = &program->dead_lock;
-		philos[i].meal_lock = &program->meal_lock;
-		philos[i].dead = &program->dead_flag;
-		philos[i].l_fork = &forks[i];
-		if (i == 0)
-			philos[i].r_fork = &forks[philos[i].num_of_philos - 1];
-		else
-			philos[i].r_fork = &forks[i - 1];
-		i++;
-	}
+	if (init_semaphores(program) != 0)
+		return (1);
+	init_philos(program);
+	return (0);
 }

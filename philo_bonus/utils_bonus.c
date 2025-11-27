@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:58 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:39:59 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 20:23:16 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ int	ft_usleep(size_t milliseconds)
 	return (0);
 }
 
-void	print_message(char *str, t_philo *philo, int id)
+void	print_message(char *str, t_philo *philo)
 {
 	size_t	time;
 
-	pthread_mutex_lock(philo->write_lock);
+	sem_wait(philo->write_lock);
 	time = get_current_time() - philo->start_time;
 	if (!(*philo->dead))
-		printf("%zu %d %s\n", time, id, str);
-	pthread_mutex_unlock(philo->write_lock);
+		printf("%zu %d %s\n", time, philo->id, str);
+	sem_post(philo->write_lock);
 }

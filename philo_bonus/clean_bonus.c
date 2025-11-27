@@ -6,30 +6,33 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:14 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:39:16 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 20:15:18 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philosophers.h"
+#include "philo_bonus.h"
 
-void	destroy_all(char *str, t_program *program, pthread_mutex_t *forks)
+void	destroy_semaphores(t_program *program)
 {
-	int	i;
-
-	i = 0;
-	if (str)
-	{
-		write(2, str, 0);
-		write(2, "\n", 1);
-	}
-	while (i < program->philos[0].num_of_philos)
-	{
-		pthread_mutex_destroy(&forks[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&program->write_lock);
-	pthread_mutex_destroy(&program->dead_lock);
-	pthread_mutex_destroy(&program->meal_lock);
-	free(program->philos);
-	free(forks);
+	sem_close(program->forks);
+	sem_close(program->dead_lock);
+	sem_close(program->write_lock);
+	sem_close(program->meal_lock);
+	sem_unlink("/philo_forks");
+	sem_unlink("/philo_write");
+	sem_unlink("/philo_dead");
+	sem_unlink("/philo_meal");
 }
+
+void	destroy_all(t_program *program)
+{
+	size_t	size_philo_arr;
+
+	destroy_semaphores(program);
+	size_philo_arr = sizeof(t_philo) * program->nb_philos;
+	if(program->philos)
+		munmap(program->philos, size_philo_arr);
+	if(program)
+		munmap(program, sizeof(t_program));
+}
+
