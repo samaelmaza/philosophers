@@ -6,19 +6,18 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:22 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 18:15:50 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 21:24:15 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static int clean_semaphores()
+static void clean_semaphores()
 {
 	sem_unlink("/philo_forks");
 	sem_unlink("/philo_write");
 	sem_unlink("/philo_dead");
 	sem_unlink("/philo_meal");
-	return (0);
 }
 int	init_semaphores(t_program *program)
 {
@@ -68,7 +67,10 @@ int	init_program(t_program *program, char **argv)
 		return (1);
 	}
 	if (init_semaphores(program) != 0)
+	{
+		munmap(program->philos, sizeof(t_philo) * program->nb_philos);
 		return (1);
+	}
 	init_philos(program);
 	return (0);
 }

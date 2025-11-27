@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 18:29:31 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 20:06:03 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 21:48:37 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void	eat(t_philo *philo)
 	print_message("has taken a fork", philo);
 	sem_wait(philo->program->forks);
 	print_message("has taken a fork", philo);
-	print_message("is eating", philo);
 	philo->last_meal = get_current_time();
+	print_message("is eating", philo);
 	philo->meals_eaten++;
 	ft_usleep(philo->program->time_to_eat);
 	sem_post(philo->program->forks);
@@ -29,7 +29,8 @@ void	child_process(t_philo *philo)
 {
 	pthread_t	monitor_thread;
 
-	if(pthread_create(&monitor_thread, NULL, &monitor, philo) != 0)
+	philo->last_meal = get_current_time();
+	if(pthread_create(&monitor_thread, NULL, &monitor_routine, philo) != 0)
 		exit(1);
 	pthread_detach(monitor_thread);
 	if(philo->id % 2 == 0)
@@ -40,6 +41,7 @@ void	child_process(t_philo *philo)
 		print_message("is sleeping", philo);
 		ft_usleep(philo->program->time_to_sleep);
 		print_message("is thinking", philo);
+		usleep(500);
 	}
 }
 
@@ -67,16 +69,32 @@ void	global_monitor(t_program *program)
 		pid = waitpid(-1, &status, 0);
 		if(pid == -1)
 			break;
-		if(WEXITSTATUS(status))
+		if(WIFEXITED(status))
 		{
 			if(WEXITSTATUS(status) == 1)
+			{
 				kill_all_children(program);
+				return ;
+			}
 			if(WEXITSTATUS(status) == 0)
 				finish_count++;
 		}
 	}
 }
+/* Fichier: process_bonus.c ou util_bonus.c */
 
+void	wait_for_zombies(t_program *program)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < program->nb_philos)
+	{
+		waitpid(-1, &status, 0);
+		i++;
+	}
+}
 int	start_simulation(t_program *program)
 {
 	int	i;
@@ -95,5 +113,6 @@ int	start_simulation(t_program *program)
 		i++;
 	}
 	global_monitor(program);
+	wait_for_zombies(program);
 	return (0);
 }

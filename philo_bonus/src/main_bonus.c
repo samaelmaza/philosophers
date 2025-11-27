@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:28 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 18:21:47 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 20:45:25 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,10 @@ static void	safe_exit(t_program *program)
 int	main(int argc, char **argv)
 {
 	t_program		*program;
-	t_philo			*philos;
-	pthread_mutex_t	*forks;
-	int				nb_philo;
 
 	if (argc != 5 && argc != 6)
 		return (printf("Error: Wrong argument count\n"), 1);
-	if(ft_atoi(argv[1] < 1))
+	if(ft_atoi(argv[1]) < 1)
 		return (printf("Error: Invalid number of philosophers\n"), 1);
 	if(is_not_valid_input(argv, argc))
 		return (1);

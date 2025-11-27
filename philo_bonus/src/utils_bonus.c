@@ -6,11 +6,11 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:58 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 20:23:16 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 20:54:13 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/philosophers.h"
+#include "../include/philo_bonus.h"
 
 int	ft_atoi(char *str)
 {
@@ -44,23 +44,21 @@ size_t	get_current_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-int	ft_usleep(size_t milliseconds)
+void	ft_usleep(size_t milliseconds)
 {
 	size_t	start;
 
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
 		usleep(500);
-	return (0);
 }
 
 void	print_message(char *str, t_philo *philo)
 {
 	size_t	time;
 
-	sem_wait(philo->write_lock);
-	time = get_current_time() - philo->start_time;
-	if (!(*philo->dead))
-		printf("%zu %d %s\n", time, philo->id, str);
-	sem_post(philo->write_lock);
+	sem_wait(philo->program->write_lock);
+	time = get_current_time() - philo->program->start_time;
+	printf("%zu %d %s\n", time, philo->id, str);
+	sem_post(philo->program->write_lock);
 }

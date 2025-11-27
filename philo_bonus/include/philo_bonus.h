@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 17:51:25 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 18:51:54 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/27 21:21:03 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <stdlib.h>
 # include <signal.h>
 # include <pthread.h>
+# include <limits.h>
 
 /* Gestion de la compatibilité pour mmap */
 # ifndef MAP_ANONYMOUS
@@ -37,6 +38,7 @@ typedef struct s_philo
 	pid_t		pid;
 	size_t		last_meal;
 	int			meals_eaten;
+	pthread_t	thread_id;
 	t_program	*program;
 }	t_philo;
 
@@ -55,19 +57,17 @@ typedef struct s_program
 	t_philo		*philos;
 }	t_program;
 
-/* Utils */
-long long	get_current_time(void);
+size_t		get_current_time(void);
 void		ft_usleep(size_t milliseconds);
 int			ft_atoi(char *str);
 void		print_message(char *str, t_philo *philo);
-
-/* Init & Exit */
 int			init_program(t_program *program, char **argv);
 void		init_philos(t_program *program);
 int			init_semaphores(t_program *program);
 void		destroy_all(t_program *program);
 int			start_simulation(t_program *program);
-void		*monitor(void *pointer);
+void		*monitor_routine(void *pointer);
+int			is_not_valid_input(char **argv, int argc);
 
 
 #endif
