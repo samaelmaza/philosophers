@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 23:30:40 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:05:46 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:14:36 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ int	main(int argc, char **argv)
 
 	if (argc != 5 && argc != 6)
 		return (printf("Error: Wrong argument count\n"), 1);
-	if(is_not_valid_input(argv, argc))
+	if (is_not_valid_input(argv, argc))
 		return (1);
 	philos = malloc(sizeof(t_philo) * ft_atoi(argv[1]));
 	forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
-	if(!philos || !forks)
+	if (!philos || !forks)
 		return (printf("Error: Malloc failed\n"), 1);
 	init_program(philos, &program);
 	init_forks(forks, ft_atoi(argv[1]));

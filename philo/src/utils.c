@@ -6,10 +6,9 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 14:44:51 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:05:46 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:18:28 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../include/philosophers.h"
 
@@ -31,7 +30,7 @@ int	ft_atoi(char *str)
 		res = res * 10 + (*str - '0');
 		str++;
 	}
-	if(res * sign > INT_MAX)
+	if (res * sign > INT_MAX)
 		return (-1);
 	return (res * sign);
 }

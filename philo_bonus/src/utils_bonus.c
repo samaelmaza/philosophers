@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:58 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 20:54:13 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:20:21 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	ft_atoi(char *str)
 		res = res * 10 + (*str - '0');
 		str++;
 	}
-	if(res * sign > INT_MAX)
+	if (res * sign > INT_MAX)
 		return (-1);
 	return (res * sign);
 }
@@ -59,6 +59,6 @@ void	print_message(char *str, t_philo *philo)
 
 	sem_wait(philo->program->write_lock);
 	time = get_current_time() - philo->program->start_time;
-	printf("%zu %d %s\n", time, philo->id, str);
+	printf("%ld %d %s\n", time, philo->id, str);
 	sem_post(philo->program->write_lock);
 }

@@ -6,30 +6,32 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:22 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 21:24:15 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:26:27 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static void clean_semaphores()
+static void	clean_semaphores(void)
 {
 	sem_unlink("/philo_forks");
 	sem_unlink("/philo_write");
 	sem_unlink("/philo_dead");
 	sem_unlink("/philo_meal");
 }
+
 int	init_semaphores(t_program *program)
 {
 	clean_semaphores();
-	program->forks = sem_open("/philo_forks", O_CREAT, 0664, program->nb_philos);
+	program->forks = sem_open("/philo_forks", O_CREAT,
+			0664, program->nb_philos);
 	program->write_lock = sem_open("/philo_write", O_CREAT, 0644, 1);
 	program->dead_lock = sem_open("/philo_dead", O_CREAT, 0644, 1);
 	program->meal_lock = sem_open("/philo_meal", O_CREAT, 0644, 1);
-	if(program->forks == SEM_FAILED ||
-		program->write_lock == SEM_FAILED ||
-		program->dead_lock == SEM_FAILED ||
-		program->meal_lock == SEM_FAILED)
+	if (program->forks == SEM_FAILED
+		|| program->write_lock == SEM_FAILED
+		|| program->dead_lock == SEM_FAILED
+		|| program->meal_lock == SEM_FAILED)
 		return (1);
 	return (0);
 }
@@ -55,6 +57,7 @@ int	init_program(t_program *program, char **argv)
 	program->time_to_die = ft_atoi(argv[2]);
 	program->time_to_eat = ft_atoi(argv[3]);
 	program->time_to_sleep = ft_atoi(argv[4]);
+	program->start_time = get_current_time();
 	if (argv[5])
 		program->meals_required = ft_atoi(argv[5]);
 	else
@@ -67,10 +70,7 @@ int	init_program(t_program *program, char **argv)
 		return (1);
 	}
 	if (init_semaphores(program) != 0)
-	{
-		munmap(program->philos, sizeof(t_philo) * program->nb_philos);
 		return (1);
-	}
 	init_philos(program);
 	return (0);
 }

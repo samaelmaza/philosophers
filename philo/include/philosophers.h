@@ -6,12 +6,12 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 14:44:28 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:00:39 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:14:17 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#ifndef PHILOSOPHERS_H
+# define PHILOSOPHERS_H
 
 # include <pthread.h>
 # include <stdio.h>

@@ -17,7 +17,6 @@ RESET = \033[0m
 
 SRCS = $(SRC_DIR)/main_bonus.c \
 		$(SRC_DIR)/clean_bonus.c \
-		$(SRC_DIR)/monitor_bonus.c \
 		$(SRC_DIR)/parse_bonus.c \
 		$(SRC_DIR)/process.c \
 		$(SRC_DIR)/init_bonus.c \

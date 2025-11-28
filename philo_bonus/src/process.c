@@ -6,113 +6,115 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 18:29:31 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/27 21:48:37 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 08:43:04 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	eat(t_philo *philo)
+void	*monitor_thread(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	while (1)
+	{
+		sem_wait(philo->program->meal_lock);
+		if (get_current_time() - philo->last_meal > philo->program->time_to_die)
+		{
+			sem_wait(philo->program->write_lock);
+			printf("%ld %d died\n", get_current_time()
+				- philo->program->start_time,
+				philo->id);
+			sem_post(philo->program->meal_lock);
+			exit(1);
+		}
+		sem_post(philo->program->meal_lock);
+		if (philo->program->meals_required != -1
+			&& philo->meals_eaten >= philo->program->meals_required)
+			break ;
+		usleep(1000);
+	}
+	return (NULL);
+}
+
+void	eat(t_philo	*philo)
 {
 	sem_wait(philo->program->forks);
 	print_message("has taken a fork", philo);
 	sem_wait(philo->program->forks);
 	print_message("has taken a fork", philo);
-	philo->last_meal = get_current_time();
 	print_message("is eating", philo);
+	sem_wait(philo->program->meal_lock);
+	philo->last_meal = get_current_time();
 	philo->meals_eaten++;
+	sem_post(philo->program->meal_lock);
 	ft_usleep(philo->program->time_to_eat);
 	sem_post(philo->program->forks);
 	sem_post(philo->program->forks);
 }
-void	child_process(t_philo *philo)
-{
-	pthread_t	monitor_thread;
 
-	philo->last_meal = get_current_time();
-	if(pthread_create(&monitor_thread, NULL, &monitor_routine, philo) != 0)
-		exit(1);
-	pthread_detach(monitor_thread);
-	if(philo->id % 2 == 0)
+void	philo_routine(t_philo *philo)
+{
+	pthread_t	monitor;
+
+	pthread_create(&monitor, NULL, &monitor_thread, philo);
+	pthread_detach(monitor);
+	if (philo->id % 2 == 0)
 		ft_usleep(1);
-	while(1)
+	while (1)
 	{
 		eat(philo);
+		if (philo->program->meals_required != -1
+			&& philo->meals_eaten >= philo->program->meals_required)
+			exit(0);
 		print_message("is sleeping", philo);
 		ft_usleep(philo->program->time_to_sleep);
 		print_message("is thinking", philo);
-		usleep(500);
 	}
 }
 
-void	kill_all_children(t_program *program)
+int	init_processes(t_program *data)
 {
 	int	i;
 
 	i = 0;
-	while(i < program->nb_philos)
+	while (i < data->nb_philos)
 	{
-		kill(program->philos[i].pid, SIGKILL);
+		data->philos[i].pid = fork();
+		if (data->philos[i].pid < 0)
+			return (1);
+		if (data->philos[i].pid == 0)
+			philo_routine(&data->philos[i]);
 		i++;
 	}
+	return (0);
 }
 
-void	global_monitor(t_program *program)
-{
-	int		status;
-	int		finish_count;
-	pid_t	pid;
-
-	finish_count = 0;
-	while(finish_count < program->nb_philos)
-	{
-		pid = waitpid(-1, &status, 0);
-		if(pid == -1)
-			break;
-		if(WIFEXITED(status))
-		{
-			if(WEXITSTATUS(status) == 1)
-			{
-				kill_all_children(program);
-				return ;
-			}
-			if(WEXITSTATUS(status) == 0)
-				finish_count++;
-		}
-	}
-}
-/* Fichier: process_bonus.c ou util_bonus.c */
-
-void	wait_for_zombies(t_program *program)
+int	start_simulation(t_program *data)
 {
 	int	i;
 	int	status;
 
 	i = 0;
-	while (i < program->nb_philos)
+	while (i < data->nb_philos)
 	{
-		waitpid(-1, &status, 0);
+		data->philos[i].pid = fork();
+		if (data->philos[i].pid == 0)
+			philo_routine(&data->philos[i]);
 		i++;
 	}
-}
-int	start_simulation(t_program *program)
-{
-	int	i;
-
 	i = 0;
-	while(i < program->nb_philos)
+	while (i < data->nb_philos)
 	{
-		program->philos[i].pid = fork();
-		if(program->philos[i].pid == -1)
-			return (printf("Error: Fork failed\n"), 1);
-		if(program->philos[i].pid == 0)
+		waitpid(-1, &status, 0);
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
 		{
-			child_process(&program->philos[i]);
-			exit(0);
+			kill_all_philos(data);
+			i = data->nb_philos;
 		}
 		i++;
 	}
-	global_monitor(program);
-	wait_for_zombies(program);
+	clean_exit(data);
 	return (0);
 }
