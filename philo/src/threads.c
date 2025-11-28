@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 14:45:51 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/26 23:05:46 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 18:15:04 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,26 +26,64 @@ int	check_dead(t_philo *philo)
 
 void	eat(t_philo *philo)
 {
-	pthread_mutex_lock(philo->r_fork);
+	pthread_mutex_t	*first_fork;
+	pthread_mutex_t	*second_fork;
+
+	// 1. DÉCIDER L'ORDRE POUR ÉVITER LE DEADLOCK (ET HELGRIND)
+	// Si id est pair : Droite puis Gauche
+	// Si id est impair : Gauche puis Droite
+	if (philo->id % 2 == 0)
+	{
+		first_fork = philo->r_fork;
+		second_fork = philo->l_fork;
+	}
+	else
+	{
+		first_fork = philo->l_fork;
+		second_fork = philo->r_fork;
+	}
+
+	// 2. PRENDRE LA PREMIÈRE
+	pthread_mutex_lock(first_fork);
 	print_message("has taken a fork", philo, philo->id);
+
+	// 3. GÉRER LE CAS DU PHILO SEUL (Important !)
 	if (philo->num_of_philos == 1)
 	{
 		ft_usleep(philo->time_to_die);
-		pthread_mutex_unlock(philo->r_fork);
+		pthread_mutex_unlock(first_fork);
 		return ;
 	}
-	pthread_mutex_lock(philo->l_fork);
+
+	// 4. PRENDRE LA SECONDE
+	pthread_mutex_lock(second_fork);
 	print_message("has taken a fork", philo, philo->id);
+
+	// 5. CHECK MORT AVANT DE MANGER (Sécurité)
+	pthread_mutex_lock(philo->dead_lock);
+	if (*philo->dead == 1)
+	{
+		pthread_mutex_unlock(philo->dead_lock);
+		pthread_mutex_unlock(first_fork); // Attention à déverrouiller dans l'ordre inverse
+		pthread_mutex_unlock(second_fork);
+		return ;
+	}
+	pthread_mutex_unlock(philo->dead_lock);
+
+	// 6. MANGER
 	philo->eating = 1;
 	print_message("is eating", philo, philo->id);
 	pthread_mutex_lock(philo->meal_lock);
 	philo->last_meal = get_current_time();
 	philo->meals_eaten++;
 	pthread_mutex_unlock(philo->meal_lock);
+
 	ft_usleep(philo->time_to_eat);
 	philo->eating = 0;
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_unlock(philo->r_fork);
+
+	// 7. LIBÉRER (Toujours les deux)
+	pthread_mutex_unlock(first_fork);
+	pthread_mutex_unlock(second_fork);
 }
 
 void	*philo_routine(void *pointer)
@@ -61,6 +99,8 @@ void	*philo_routine(void *pointer)
 		print_message("is sleeping", philo, philo->id);
 		ft_usleep(philo->time_to_sleep);
 		print_message("is thinking", philo, philo->id);
+		if (philo->num_of_philos % 2 != 0)
+			ft_usleep(1);
 	}
 	return (pointer);
 }

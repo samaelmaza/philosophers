@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 14:44:51 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:18:28 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 18:15:09 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,30 @@ int	ft_usleep(size_t milliseconds)
 	return (0);
 }
 
-void	print_message(char *str, t_philo *philo, int id)
+void print_message(char *str, t_philo *philo, int id)
 {
-	size_t	time;
+    size_t  time;
 
-	pthread_mutex_lock(philo->write_lock);
-	time = get_current_time() - philo->start_time;
-	if (!(*philo->dead))
-		printf("%zu %d %s\n", time, id, str);
-	pthread_mutex_unlock(philo->write_lock);
+    // 1. On verrouille l'écriture pour que le message ne soit pas coupé
+    pthread_mutex_lock(philo->write_lock);
+
+    // 2. On verrouille le dead_lock POUR LIRE LA VALEUR
+    pthread_mutex_lock(philo->dead_lock);
+    if (!(*philo->dead)) // Maintenant la lecture est protégée
+    {
+        // On peut déverrouiller dead_lock ici car on est déjà dans le if
+        // (Ou après le printf, peu importe tant que write_lock est tenu)
+        pthread_mutex_unlock(philo->dead_lock);
+
+        time = get_current_time() - philo->start_time;
+        printf("%zu %d %s\n", time, id, str);
+    }
+    else
+    {
+        // Si on est mort, on n'oublie pas de déverrouiller
+        pthread_mutex_unlock(philo->dead_lock);
+    }
+
+    // 3. On libère l'écriture
+    pthread_mutex_unlock(philo->write_lock);
 }
