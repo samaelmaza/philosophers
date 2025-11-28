@@ -6,11 +6,11 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:47 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:19:34 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 15:00:16 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "../include/philo_bonus.h"
 
 static int	is_not_digit(char **av, int ac)
 {

@@ -6,11 +6,11 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 18:29:31 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:43:04 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 15:07:38 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "../include/philo_bonus.h"
 
 void	*monitor_thread(void *arg)
 {
@@ -115,6 +115,6 @@ int	start_simulation(t_program *data)
 		}
 		i++;
 	}
-	clean_exit(data);
+	destroy_all(data);
 	return (0);
 }

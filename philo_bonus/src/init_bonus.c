@@ -6,11 +6,11 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:22 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:26:27 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 15:00:03 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "../include/philo_bonus.h"
 
 static void	clean_semaphores(void)
 {

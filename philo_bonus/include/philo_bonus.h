@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 17:51:25 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 14:52:53 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 15:07:44 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,4 @@ void		destroy_all(t_program *program);
 int			start_simulation(t_program *program);
 int			is_not_valid_input(char **argv, int argc);
 void		kill_all_philos(t_program *data);
-void		clean_exit(t_program *data);
 #endif

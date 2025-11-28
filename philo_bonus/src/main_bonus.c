@@ -6,11 +6,11 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 23:39:28 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:27:47 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 14:59:40 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "../include/philo_bonus.h"
 
 static void	safe_exit(t_program *program)
 {
