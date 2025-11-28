@@ -52,20 +52,26 @@ fclean: clean
 		echo "$(RED)$(NAME) removed.$(RESET)"; \
 	fi
 
-test-0:
+test-leak:
 	@echo "$(BLUE)test-0$(RESET)"
 	@echo "$(BLUE)Death test at 310ms$(RESET)"
+	valgrind ./$(NAME) 4 310 200 100
+
+test-0:
+	@echo "$(BLUE)test-0$(RESET)"
+	@echo "$(BLUE)Death test around 310ms$(RESET)"
 	./$(NAME) 4 310 200 100
 
 test-1:
 	@echo "$(BLUE)test-1$(RESET)"
-	@echo "$(BLUE)Death test at 310ms$(RESET)"
-	./$(NAME) 5 410 200 200
+	@echo "$(BLUE)No death test$(RESET)"
+	./$(NAME) 5 800 200 200
 
 test-2:
 	@echo "$(BLUE)test-0$(RESET)"
-	@echo "$(BLUE)Death test at 310ms$(RESET)"
-	./$(NAME) 4 310 200 100
+	@echo "$(BLUE)At least meal tests$(RESET)"
+	./$(NAME) 5 800 200 200 1
+
 
 re: fclean all
 
@@ -80,5 +86,5 @@ help:
 	@echo "  $(GREEN)test-4$(RESET)           - A little test with 4 commands"
 	@echo "  $(GREEN)help$(RESET)             - Show this help"
 
-.PHONY: all clean fclean re help test-2 test-3 test-4
+.PHONY: all clean fclean re help test-leak test-0 test-1 test-2
 .PRECIOUS: $(OBJ_DIR)/%.o

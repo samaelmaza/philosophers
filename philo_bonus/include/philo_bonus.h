@@ -6,7 +6,7 @@
 /*   By: sreffers <sreffers@student.42madrid.c>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 17:51:25 by sreffers          #+#    #+#             */
-/*   Updated: 2025/11/28 08:40:09 by sreffers         ###   ########.fr       */
+/*   Updated: 2025/11/28 14:52:53 by sreffers         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 # include <pthread.h>
 # include <limits.h>
 
-/* Gestion de la compatibilité pour mmap */
 # ifndef MAP_ANONYMOUS
 #  define MAP_ANONYMOUS 0x20
 # endif
